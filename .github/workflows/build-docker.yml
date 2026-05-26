@@ -32,4 +32,4 @@ jobs:
           context: .
           push: true
           tags: ${{ vars.HARBOR_URL }}/ai4os/nomad-monitoring:latest
-          file: ./docker/Dockerfile
+          file: docker/Dockerfile
