@@ -1,0 +1,14 @@
+services:
+  monitoring-nomad:
+    image: "registry.cloud.ai4eosc.eu/ai4os/nomad-monitoring:latest"
+    restart: always
+    environment:
+      NOMAD_ADDR: https://193.146.75.205:4646
+      NOMAD_CACERT: /certs/nomad-ca.pem
+      NOMAD_CLIENT_CERT: /certs/cli.pem
+      NOMAD_CLIENT_KEY: /certs/cli-key.pem
+      NOMAD_TLS_SERVER_NAME: node-ifca-0
+    volumes:
+      - /home/ubuntu/nomad-certs:/certs:ro
+    ports:
+      - 8000:8000
