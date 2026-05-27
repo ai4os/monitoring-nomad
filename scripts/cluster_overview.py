@@ -24,7 +24,6 @@ def get_cluster_overview_df():
     # Get PAPI-processed stats
     r = requests.get(
         "https://api.cloud.ai4eosc.eu/v1/deployments/stats/cluster",
-        params={"vo": "vo.ai4eosc.eu"},
         headers={"accept": "application/json"},
     )
     r.raise_for_status()
