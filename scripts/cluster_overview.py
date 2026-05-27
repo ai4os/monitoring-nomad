@@ -41,11 +41,7 @@ def get_cluster_overview_df():
             ansible_commits.append(nstats["ansible"])
 
             # Add latest timestamp where tests were executed
-            tests_ts = node["Meta"].get("last_tested", None)
-            tests_ts = (
-                datetime.fromisoformat(tests_ts) if tests_ts else datetime(1970, 1, 1)
-            )
-            nstats["last_tested"] = tests_ts
+            nstats["last_tested"] = node["Meta"].get("last_tested", None)
 
 
     # We retrieve commit information from github to flag as problematic all the nodes that
