@@ -43,7 +43,19 @@ def get_cluster_overview_df():
             ansible_commits.append(nstats["ansible"])
 
             # Add latest timestamp where tests were executed
-            nstats["last_tested"] = node["Meta"].get("last_tested", None)
+            last_tested = node["Meta"].get("last_tested")
+            if last_tested:
+                try:
+                    dt = datetime.fromisoformat(last_tested)
+                    now = datetime.now(dt.tzinfo) if dt.tzinfo else datetime.now()
+                    nstats["last_tested_delta"] = int((now - dt).total_seconds())
+                    nstats["last_tested"] = dt.replace(microsecond=0).isoformat()
+                except Exception:
+                    nstats["last_tested"] = last_tested
+                    nstats["last_tested_delta"] = None
+            else:
+                nstats["last_tested"] = None
+                nstats["last_tested_delta"] = None
 
 
     # We retrieve commit information from github to flag as problematic all the nodes that
@@ -82,6 +94,7 @@ def get_cluster_overview_df():
         headers += [f"{r}_used", f"{r}_total", f"{r}_%"]
     headers += [
         "last_tested",
+        "last_tested_delta",
         "ansible",
     ]
     out = {k: [] for k in headers}
@@ -99,6 +112,7 @@ def get_cluster_overview_df():
             out["job_num"].append(node["jobs_num"])
             out["reallocations"].append(node["reallocations"])
             out["last_tested"].append(node["last_tested"])
+            out["last_tested_delta"].append(node.get("last_tested_delta"))
             out["ansible"].append(node["ansible"])
 
             if len(node["gpu_models"]) == 1:
