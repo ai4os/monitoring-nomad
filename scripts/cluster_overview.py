@@ -91,7 +91,7 @@ def get_cluster_overview_df():
     ]
     resources = ["gpu", "cpu", "ram", "disk"]
     for r in resources:
-        headers += [f"{r}_used", f"{r}_total", f"{r}_%", f"{r}_joined"]
+        headers += [f"{r}_used", f"{r}_total", f"{r}_%"]
     headers += [
         "last_tested",
         "last_tested_delta",
@@ -126,11 +126,10 @@ def get_cluster_overview_df():
             for r in resources:
                 out[f"{r}_used"].append(node[f"{r}_used"])
                 out[f"{r}_total"].append(node[f"{r}_total"])
-                out[f"{r}_joined"].append(f"{node[f'{r}_used']} / {node[f'{r}_total']}")
 
                 if node[f"{r}_total"]:
                     per = node[f"{r}_used"] / node[f"{r}_total"]
-                    per = per
+                    per = round(per, 4)
                 else:
                     per = None
                 out[f"{r}_%"].append(per)
@@ -144,13 +143,25 @@ def get_cluster_overview_df():
 
     # Convert columns to integer and rename
     df["ram_total"] = (df["ram_total"] / 10**3).astype(int)
+    df["ram_used"] = (df["ram_used"] / 10**3).astype(int)
     df["disk_total"] = (df["disk_total"] / 10**3).astype(int)
+    df["disk_used"] = (df["disk_used"] / 10**3).astype(int)
     df = df.rename(
         columns={
             "ram_total": "ram_total (GB)",
+            "ram_used": "ram_used (GB)",
             "disk_total": "disk_total (GB)",
+            "disk_used": "disk_used (GB)",
         }
     )
+
+    for r in resources:
+        used_col = f"{r}_used (GB)" if r in ["ram", "disk"] else f"{r}_used"
+        total_col = f"{r}_total (GB)" if r in ["ram", "disk"] else f"{r}_total"
+        df[f"{r}_joined"] = df.apply(
+            lambda x: f"{x[used_col]} / {x[total_col]}" if x[total_col] else "",
+            axis=1
+        )
 
     return df
 
