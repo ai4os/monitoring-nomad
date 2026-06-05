@@ -91,7 +91,7 @@ def get_cluster_overview_df():
     ]
     resources = ["gpu", "cpu", "ram", "disk"]
     for r in resources:
-        headers += [f"{r}_used", f"{r}_total", f"{r}_%"]
+        headers += [f"{r}_used", f"{r}_total", f"{r}_%", f"{r}_joined"]
     headers += [
         "last_tested",
         "last_tested_delta",
@@ -126,6 +126,7 @@ def get_cluster_overview_df():
             for r in resources:
                 out[f"{r}_used"].append(node[f"{r}_used"])
                 out[f"{r}_total"].append(node[f"{r}_total"])
+                out[f"{r}_joined"].append(f"{node[f'{r}_used']} / {node[f'{r}_total']}")
 
                 if node[f"{r}_total"]:
                     per = node[f"{r}_used"] / node[f"{r}_total"]
