@@ -10,6 +10,8 @@ import pandas as pd
 import requests
 import warnings
 
+from utils import compute_ansible_delta
+
 
 # Read Nomad envvars
 load_dotenv()
@@ -118,9 +120,12 @@ def get_cluster_overview_df():
                     per = None
                 out[f"{r}_%"].append(per)
 
-
     df = pd.DataFrame.from_dict(out)
     df = df.sort_values(by="name")
+
+    # We retrieve commit information from github to flag as problematic all the nodes that
+    # are running an ansible version that is older than the most updated node
+    df["ansible_delta"] = compute_ansible_delta(df["ansible"].tolist())
 
     # Convert columns to integer and rename
     df["ram_total"] = (df["ram_total"] / 10**3).astype(int)

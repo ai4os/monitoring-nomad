@@ -142,3 +142,5 @@ GTAGS
 
 # Things specific to this project #
 ###################################
+ansible_commits_cache.txt
+cluster-overview.csv
